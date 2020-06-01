@@ -1,0 +1,105 @@
+<ion-header no-border>
+  <div class="header-page" style="background:var(--ion-color-medium-contrast);">
+    <div class="input-search">
+      <div class="logo-side logo-mobile">
+        <div class="" style="width:35px">
+          <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+             viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+          <path style="fill:#ca3d46;" d="M407,0H105C47.103,0,0,47.103,0,105v302c0,57.897,47.103,105,105,105h302
+            c57.897,0,105-47.103,105-105V105C512,47.103,464.897,0,407,0z"/>
+          <path style="fill:#C42731;" d="M407,0H256v512h151c57.897,0,105-47.103,105-105V105C512,47.103,464.897,0,407,0z"/>
+          <polygon style="fill:#FFFFFF;" points="256,368.125 120.073,466.882 171.993,307.09 36.064,208.333 204.08,208.333 256,48.54
+            307.92,208.333 475.936,208.333 340.007,307.09 391.927,466.882 "/>
+          <polygon style="fill:#F2F2F2;" points="475.936,208.333 307.92,208.333 256,48.54 256,368.125 391.927,466.882 340.007,307.09 "/>
+          <polygon style="fill:#ca3d46;" points="216,246 216,306 286,306 286,276 286,246 "/>
+          <g>
+            <polygon style="fill:#C42731;" points="306,256 286,276 306,296 316,296 316,256 	"/>
+            <polygon style="fill:#C42731;" points="256,246 256,306 286,306 286,276 286,246 	"/></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg>
+        </div>
+        <ion-menu-toggle class="">
+          <div class="icon-menu-mobile" style="font-size: 24px;line-height:24px;">
+            <ion-icon name="ios-menu"></ion-icon>
+          </div>
+        </ion-menu-toggle>
+      </div>
+      <input type="text" class="input-search input-mobile" placeholder="Search" spellcheck="false" autocomplete="off" name="" value="">
+    </div>
+  </div>
+</ion-header>
+
+<ion-content style="position:relative;">
+  <div class="sticky-component">
+    <div class="touch-scrolling" scrollx="true">
+      <div class="ion-text-nowrap">
+        <ng-container *ngIf="snapshot === 'movie'">
+          <div *ngFor="let i of movie_genres" [class]="genreName===i.name ? 'genre-movie genre-active' : 'genre-movie'" (click)="setGenreId(i.id,i.name)">
+            {{i.icon}} {{i.name}}
+          </div>
+        </ng-container>
+        <ng-container *ngIf="snapshot === 'tv'">
+          <div *ngFor="let i of tv_genres" [class]="genreName===i.name ? 'genre-movie genre-active' : 'genre-movie'" (click)="setGenreId(i.id,i.name)">
+            {{i.icon}} {{i.name}}
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <div class="main-container" style="position:relative!important;">
+    <!-- <ion-select class="select-year" lines="none" mode="ios" aria-label="select-year" [interfaceOptions]="customPopoverOptions" interface="popover" [(ngModel)]="year" (ionChange)="fetchMovies()" multiple="false" placeholder="Select a year">
+      <ion-select-option class="itemi-year" *ngFor="let m of movie_years" [value]="m">{{m}}</ion-select-option>
+    </ion-select> -->
+    <div class="flex ion-justify-content-end">
+      <div class="filter-btn genre-filter" *ngIf="genreName != ''" disabled>
+        <span>{{truncateString(genreName,15)}}</span>
+        <p (click)="clearFilter()"><ion-icon name="close-circle"></ion-icon></p>
+      </div>
+      <div class="filter-btn" id="filter-button">
+        <span>Filter</span>
+        <p><ion-icon name="md-arrow-dropdown"></ion-icon></p>
+      </div>
+    </div>
+    <div class="haha" padding-horizontal>
+      <div class="grid-movies">
+        <div *ngFor="let i of items" class="grid-item _item{{i.id}}">
+          <div class="item-thumbnail not-skeleton">
+            <ion-img *ngIf="i.poster_path === null"[src]="noimage" [alt]="i.title" [title]="i.title"></ion-img>
+            <ion-img [src]="'https://image.tmdb.org/t/p/w500/'+i.poster_path" [alt]="i.title" (error)="this.src = noimage"></ion-img>
+          </div>
+          <div class="text-item">
+            <ng-container *ngIf="snapshot === 'movie'">
+              <h3 [title]="i.title" text-capitalize>{{i.title}}</h3>
+              <p class="date-movie" title="{{dateFormat(i.release_date)}}">{{dateFormat(i?.release_date)}}</p>
+            </ng-container>
+            <ng-container *ngIf="snapshot === 'tv'">
+              <h3 [title]="i.name" text-capitalize>{{i.name}}</h3>
+              <p class="date-movie" title="{{dateFormat(i.first_air_date)}}">{{dateFormat(i?.first_air_date)}}</p>
+            </ng-container>
+            <p class="popularity-movie"><ion-icon name="ios-star"></ion-icon> <span>{{i.vote_average}} ({{i.vote_count}})</span></p>
+          </div>
+        </div>
+        <ng-container *ngIf="items.length === 0">
+          <div class="grid-item" *ngFor="let i of [0,1,2,3,4,5,6,7]">
+            <div class="item-thumbnail">
+              <ion-skeleton-text></ion-skeleton-text>
+            </div>
+            <div class="text-item">
+              <h3 style="font-size:1rem;line-height:1rem;" text-capitalize><ion-skeleton-text></ion-skeleton-text></h3>
+              <p style="width:30%;"><ion-skeleton-text></ion-skeleton-text></p>
+              <p style="width:70%;"><ion-skeleton-text></ion-skeleton-text></p>
+            </div>
+          </div>
+          </ng-container>
+      </div>
+      <div *ngIf="items.length===0" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6;"><ion-spinner name="crescent" color="light"></ion-spinner></div>
+    </div>
+    <ion-infinite-scroll class="infinite-content" threshold="100px" (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content class="infinite-content"
+        loading-color="light"
+        loading-spinner="crescent"
+        loading-Text="Loading more data...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+
+
+</ion-content>
